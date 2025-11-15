@@ -1,0 +1,5 @@
+model_name: "toxic-comment-detector"
+version: "1.0.0"
+entry_points:
+  train: "src/train.py"
+  predict: "src/predict.py"
