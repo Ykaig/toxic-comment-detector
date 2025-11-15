@@ -1,0 +1,7 @@
+name: CI for Toxic Comment Classifier
+on:
+  push:
+    branches: [ main ]
+jobs:
+  call-reusable-pipeline:
+    uses: Ykaig/ml-sentinel/.github/workflows/ml-pipeline.yml@main
