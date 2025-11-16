@@ -1,10 +1,22 @@
 # src/predict.py
+
 from fastapi import FastAPI
 from pydantic import BaseModel
+import joblib
+import pathlib
+from typing import List
 
+# --- Global objects ---
+# Load the trained artifacts once when the API starts
+# This is much more efficient than loading them on every request.
+artifacts_path = pathlib.Path("artifacts")
+vectorizer = joblib.load(artifacts_path / "vectorizer.pkl")
+model = joblib.load(artifacts_path / "model.pkl")
+
+
+# --------------------
 
 # Defines the input data model using Pydantic
-# This ensures automatic validation of incoming data
 class InputData(BaseModel):
     text: str
 
@@ -19,11 +31,11 @@ class OutputData(BaseModel):
     identity_hate: float
 
 
-# Creates the FastAPI application instance
+# Create the FastAPI app instance
 app = FastAPI(
-    title="Toxic Comment Classifier - Dummy API",
-    description="A dummy API that respects the input/output contract.",
-    version="0.0.1"
+    title="Toxic Comment Classifier - Real API",
+    description="API that uses a trained TF-IDF and Logistic Regression model to classify comments.",
+    version="1.0.0"
 )
 
 
@@ -35,24 +47,35 @@ def read_root():
 @app.post("/predict", response_model=OutputData)
 def predict(data: InputData):
     """
-    Dummy prediction endpoint.
-    Accepts text input and always returns the same static response,
-    while respecting the correct output structure.
+    Real prediction endpoint.
+    Accepts text input, transforms it using the loaded vectorizer,
+    and returns the model's prediction probabilities.
     """
     print(f"Received input text: '{data.text}'")
 
-    # Dummy response that follows the expected output contract
-    dummy_prediction = {
-        "toxic": 0.0,
-        "severe_toxic": 0.0,
-        "obscene": 0.0,
-        "threat": 0.0,
-        "insult": 0.0,
-        "identity_hate": 0.0
+    # The input text must be in a list or iterable for the vectorizer
+    text_to_vectorize = [data.text]
+
+    # 1. Vectorize the input text
+    vectorized_text = vectorizer.transform(text_to_vectorize)
+
+    # 2. Get prediction probabilities from the model
+    # The result is a list of arrays, one for each class
+    prediction_probabilities = model.predict_proba(vectorized_text)
+
+    # 3. Format the output to match the Pydantic model
+    # We take the first (and only) element from the prediction result
+    output = {
+        "toxic": prediction_probabilities[0][0],
+        "severe_toxic": prediction_probabilities[0][1],
+        "obscene": prediction_probabilities[0][2],
+        "threat": prediction_probabilities[0][3],
+        "insult": prediction_probabilities[0][4],
+        "identity_hate": prediction_probabilities[0][5]
     }
 
-    print(f"Returning dummy prediction: {dummy_prediction}")
-    return dummy_prediction
+    print(f"Returning real prediction: {output}")
+    return output
 
 # To run the API locally:
 # uvicorn src.predict:app --reload
