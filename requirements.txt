@@ -1,4 +1,10 @@
+# API dependencies
 fastapi
 uvicorn
 pydantic
 PyYAML
+
+# Training script dependencies
+pandas
+scikit-learn
+dvc[gs] # 'gs' extra for Google Cloud Storage support

@@ -1,40 +1,69 @@
 # src/train.py
+
 import argparse
 import yaml
 import pathlib
+import pandas as pd
+import joblib
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.linear_model import LogisticRegression
+from sklearn.multiclass import OneVsRestClassifier
 
 
 def train(config_path: str):
     """
-    Dummy training function.
-    Reads the configuration, prints some messages, and creates a fake artifact.
+    Real training function.
+    Loads data, trains a TF-IDF + Logistic Regression model, and saves the artifacts.
     """
     # Read the configuration from the provided path
     with open(config_path) as config_file:
         config = yaml.safe_load(config_file)
 
-    model_name = config['model_name']
+    print("--- Real Training Started ---")
 
-    print(f"--- Dummy Training Started for model: {model_name} ---")
+    # --- 1. Load Data ---
+    # DVC automatically handles pulling the data if it's not present locally
+    print("Step 1: Loading data from data/train.csv...")
+    data_path = pathlib.Path("data/train.csv")
+    df = pd.read_csv(data_path)
 
-    # Simulate a training process
-    print("Step 1: Loading data (simulated)...")
-    print("Step 2: Preprocessing data (simulated)...")
-    print("Step 3: Training model (simulated)...")
+    # Define features (X) and labels (y)
+    X = df['comment_text']
+    label_columns = ['toxic', 'severe_toxic', 'obscene', 'threat', 'insult', 'identity_hate']
+    y = df[label_columns]
+    print(f"Data loaded. Shape: {df.shape}")
 
-    # Create a fake artifact to simulate training output
-    # The pipeline will expect an output to be saved in the future
-    pathlib.Path("artifacts").mkdir(exist_ok=True)
-    with open("artifacts/dummy_model.pkl", "w") as f:
-        f.write("This is a dummy model artifact.")
+    # --- 2. Train TF-IDF Vectorizer ---
+    print("Step 2: Training TF-IDF Vectorizer...")
+    # Using a simple TF-IDF vectorizer as a baseline
+    vectorizer = TfidfVectorizer(max_features=5000, stop_words='english')
+    X_tfidf = vectorizer.fit_transform(X)
+    print("TF-IDF Vectorizer trained.")
 
-    print("Artifact 'dummy_model.pkl' created in /artifacts folder.")
-    print("--- Dummy Training Complete ---")
+    # --- 3. Train Model ---
+    print("Step 3: Training OneVsRest Logistic Regression model...")
+    # Using OneVsRestClassifier to handle the multi-label problem
+    # 'class_weight="balanced"' helps with the imbalanced dataset
+    base_model = LogisticRegression(solver='liblinear', class_weight='balanced')
+    model = OneVsRestClassifier(base_model)
+    model.fit(X_tfidf, y)
+    print("Model trained.")
+
+    # --- 4. Save Artifacts ---
+    print("Step 4: Saving artifacts...")
+    artifacts_dir = pathlib.Path("artifacts")
+    artifacts_dir.mkdir(exist_ok=True)  # Create artifacts dir if it doesn't exist
+
+    # Save the trained vectorizer and the model
+    joblib.dump(vectorizer, artifacts_dir / "vectorizer.pkl")
+    joblib.dump(model, artifacts_dir / "model.pkl")
+    print("Artifacts saved to /artifacts folder.")
+
+    print("--- Real Training Complete ---")
 
 
 if __name__ == '__main__':
-    # Setup to accept command-line arguments
-    parser = argparse.ArgumentParser(description="Dummy training script.")
+    parser = argparse.ArgumentParser(description="Real training script for toxic comment classification.")
     parser.add_argument('--config-path', type=str, required=True, help='Path to the model configuration file.')
     args = parser.parse_args()
 
