@@ -18,8 +18,8 @@ COPY . /app
 
 # Expose port 8000 to the outside world.
 # This is the port uvicorn will run on.
-EXPOSE 8000
+EXPOSE 8080
 
 # Command to run the application when the container launches.
 # This is the same command you use to run the API locally.
-CMD ["uvicorn", "src.predict:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "src.predict:app", "--host", "0.0.0.0", "--port", "8080"]
