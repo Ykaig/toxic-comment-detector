@@ -9,7 +9,7 @@ class InputData(BaseModel):
     text: str
 
 
-# Definisce il modello dei dati di output
+# Defines the output data model
 class OutputData(BaseModel):
     toxic: float
     severe_toxic: float
@@ -19,7 +19,7 @@ class OutputData(BaseModel):
     identity_hate: float
 
 
-# Crea l'istanza dell'applicazione FastAPI
+# Creates the FastAPI application instance
 app = FastAPI(
     title="Toxic Comment Classifier - Dummy API",
     description="A dummy API that respects the input/output contract.",
