@@ -5,3 +5,5 @@ on:
 jobs:
   call-reusable-pipeline:
     uses: Ykaig/ml-sentinel/.github/workflows/ml-pipeline.yml@main
+    secrets:
+      GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}

@@ -1,4 +1,4 @@
 [core]
     remote = myremote
 ['remote "myremote"']
-    url = gs://bucket-name
+    url = gs://toxic-comment-detector-model-dat/training
