@@ -7,3 +7,6 @@ jobs:
     uses: Ykaig/ml-sentinel/.github/workflows/ml-pipeline.yml@main
     secrets:
       GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
+      GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+      GCP_REGION: ${{ secrets.GCP_REGION }}
+      ARTIFACT_REGISTRY_REPO: ${{ secrets.ARTIFACT_REGISTRY_REPO }}
