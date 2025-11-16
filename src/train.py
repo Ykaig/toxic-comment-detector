@@ -12,14 +12,14 @@ from sklearn.multiclass import OneVsRestClassifier
 
 def train(config_path: str):
     """
-    Real training function.
+    Training function.
     Loads data, trains a TF-IDF + Logistic Regression model, and saves the artifacts.
     """
     # Read the configuration from the provided path
     with open(config_path) as config_file:
         config = yaml.safe_load(config_file)
 
-    print("--- Real Training Started ---")
+    print("--- Training Started ---")
 
     # --- 1. Load Data ---
     # DVC automatically handles pulling the data if it's not present locally
@@ -59,11 +59,11 @@ def train(config_path: str):
     joblib.dump(model, artifacts_dir / "model.pkl")
     print("Artifacts saved to /artifacts folder.")
 
-    print("--- Real Training Complete ---")
+    print("--- Training Complete ---")
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description="Real training script for toxic comment classification.")
+    parser = argparse.ArgumentParser(description="Training script for toxic comment classification.")
     parser.add_argument('--config-path', type=str, required=True, help='Path to the model configuration file.')
     args = parser.parse_args()
 
