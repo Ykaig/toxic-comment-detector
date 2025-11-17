@@ -4,7 +4,8 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 import joblib
 import pathlib
-from typing import List
+from fastapi.middleware.cors import CORSMiddleware
+
 
 # --- Global objects ---
 # Load the trained artifacts once when the API starts
@@ -38,6 +39,19 @@ app = FastAPI(
     version="1.0.0"
 )
 
+# Define the origins that are allowed to make requests to this API
+origins = [
+    "http://localhost:3000", # For local development of the dashboard
+    # Add the future URL of your deployed dashboard here, e.g., "https://my-dashboard.vercel.app"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins, # List of origins that are allowed to make requests
+    allow_credentials=False,
+    allow_methods=["POST"], # Allow all methods (GET, POST, etc.)
+    allow_headers=["Content-Type"], # Allow all headers
+)
 
 @app.get("/")
 def read_root():

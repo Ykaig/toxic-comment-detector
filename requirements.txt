@@ -8,3 +8,5 @@ PyYAML
 pandas
 scikit-learn
 dvc[gs] # 'gs' extra for Google Cloud Storage support
+
+python-multipart    # Required for CORS middleware
