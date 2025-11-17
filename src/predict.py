@@ -49,8 +49,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=origins, # List of origins that are allowed to make requests
     allow_credentials=False,
-    allow_methods=["POST"], # Allow all methods (GET, POST, etc.)
-    allow_headers=["Content-Type"], # Allow all headers
+    allow_methods=["POST", "GET"],
+    allow_headers=["Content-Type"],
 )
 
 @app.get("/")
